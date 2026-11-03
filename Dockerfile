@@ -1,5 +1,5 @@
 # ─── Stage 1: Frontend Build ──────────────────────────────────────────────────
-FROM node:20-slim AS frontend-builder
+FROM node:25-slim AS frontend-builder
 RUN npm install -g pnpm@10
 WORKDIR /build
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
