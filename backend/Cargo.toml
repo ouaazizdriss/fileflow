@@ -24,7 +24,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 # v10 requires an explicit crypto backend. We only use HS256 (HMAC-SHA256), so
 # the pure-Rust provider covers it and keeps the distroless build free of C deps.
-jsonwebtoken = { version = "10", default-features = false, features = ["rust_crypto"] }
+jsonwebtoken = { version = "11", default-features = false, features = ["rust_crypto"] }
 bcrypt = "0.15"
 uuid = { version = "1", features = ["v4", "v5", "serde"] }
 mime_guess = "2"
