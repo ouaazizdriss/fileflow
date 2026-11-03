@@ -39,7 +39,7 @@ bytes = "1"
 percent-encoding = "2"
 totp-rs = { version = "5", features = ["gen_secret", "qr"] }
 base64 = "0.22"
-rand = "0.8"
+rand = "0.9"
 zip = { version = "9", default-features = false, features = ["deflate-flate2-zlib-rs", "time"] }
 rusqlite = { version = "0.32", features = ["bundled"] }
 
