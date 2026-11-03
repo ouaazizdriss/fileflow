@@ -25,7 +25,7 @@
     "react-hot-toast": "^2.4.1",
     "react-i18next": "^17.0.6",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
-    "zustand": "^4.5.4"
+    "zustand": "^5.0.16"
   },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "^5.28.8",
