@@ -1,0 +1,49 @@
+[package]
+name = "fileflow-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+# Standalone workspace so it isn't pulled into the main crate's build.
+[workspace]
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.fileflow]
+path = ".."
+
+[profile.release]
+debug = 1
+
+# Each target exercises a parser that consumes attacker-controlled input.
+[[bin]]
+name = "parse_range"
+path = "fuzz_targets/parse_range.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "sanitize_name"
+path = "fuzz_targets/sanitize_name.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "resolve"
+path = "fuzz_targets/resolve.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "content_disposition"
+path = "fuzz_targets/content_disposition.rs"
+test = false
+doc = false
+bench = false

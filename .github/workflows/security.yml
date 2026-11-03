@@ -1,0 +1,138 @@
+name: security
+
+# Production-grade security scanning. Runs on every push/PR to the main branches
+# and weekly (so newly-disclosed CVEs in pinned deps surface without a code change).
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: '0 6 * * 1'   # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # ── SAST: semgrep (OWASP Top 10 + Rust + TS/React + secrets) ─────────────────
+  sast:
+    runs-on: ubuntu-latest
+    container: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: >
+          semgrep scan --error --metrics off
+          --config p/owasp-top-ten --config p/rust
+          --config p/typescript --config p/react --config p/secrets
+          --exclude node_modules --exclude target --exclude dist
+          --exclude graphify-out --exclude marketing
+
+  # ── Rust dependency advisories (RustSec); honors backend/.cargo/audit.toml ────
+  cargo-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
+        with:
+          toolchain: stable
+      - uses: taiki-e/install-action@1168f6810a3cb30a3514bf5756a3b7f0422c6df8 # v2
+        with:
+          tool: cargo-audit
+      - run: cargo audit
+        working-directory: backend
+
+  # ── Rust supply-chain policy: licences, banned crates, sources, advisories ──
+  # Policy in backend/deny.toml.
+  cargo-deny:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
+        with:
+          toolchain: stable
+      - uses: taiki-e/install-action@1168f6810a3cb30a3514bf5756a3b7f0422c6df8 # v2
+        with:
+          tool: cargo-deny
+      - run: cargo deny --locked check
+        working-directory: backend
+
+  # ── JS/TS dependency advisories ──────────────────────────────────────────────
+  pnpm-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+      - run: pnpm audit --prod
+        working-directory: frontend
+
+  # ── Filesystem scan: deps + secrets + IaC/Dockerfile misconfig ───────────────
+  trivy-fs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scanners: vuln,secret,misconfig
+          severity: CRITICAL,HIGH,MEDIUM
+          exit-code: '1'
+          ignore-unfixed: false
+
+  # ── Secrets across full git history ──────────────────────────────────────────
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Fuzzing: parsers that consume attacker-controlled input ──────────────────
+  # Scheduled/manual only (it's time-boxed but slow); not a per-PR gate.
+  fuzz:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
+        with:
+          toolchain: nightly
+      - uses: taiki-e/install-action@1168f6810a3cb30a3514bf5756a3b7f0422c6df8 # v2
+        with:
+          tool: cargo-fuzz
+      - name: Fuzz each target (60s)
+        working-directory: backend
+        run: |
+          for t in parse_range sanitize_name content_disposition resolve; do
+            echo "::group::fuzz $t"
+            # Explicit target: the cargo-fuzz binary is a musl build and would default to musl, where ASan can't run.
+            cargo +nightly fuzz run --target x86_64-unknown-linux-gnu "$t" -- -max_total_time=60
+            echo "::endgroup::"
+          done
+
+  # ── Built container image: scan the actual shipped layers ────────────────────
+  # Fails only on FIXABLE High/Critical — the distroless base carries some
+  # unfixed low/medium OS CVEs that can't be remediated from this repo.
+  trivy-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: docker build -t fileflow:ci .
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: image
+          image-ref: fileflow:ci
+          scanners: vuln,secret
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: '1'

@@ -1,0 +1,2 @@
+# Tests may unwrap freely; production code may not (see [lints.clippy] in Cargo.toml).
+allow-unwrap-in-tests = true

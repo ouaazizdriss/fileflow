@@ -1,0 +1,307 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Light theme (default) ───────────────────────────────────────────────── */
+:root {
+  --color-base:          248 250 252;   /* #f8fafc */
+  --color-surface:       255 255 255;   /* #ffffff */
+  --color-elevated:      241 245 249;   /* #f1f5f9 */
+  --color-overlay:       226 232 240;   /* #e2e8f0 */
+  --color-border:        226 232 240;   /* #e2e8f0 */
+  --color-border-strong: 203 213 225;   /* #cbd5e1 */
+  --color-text-primary:  15 23 42;      /* #0f172a */
+  --color-text-secondary:71 85 105;     /* #475569 */
+  --color-text-muted:    148 163 184;   /* #94a3b8 */
+  --color-accent:        79 70 229;     /* #4f46e5 – indigo-600, confident enterprise accent */
+  --color-accent-hover:  67 56 202;     /* #4338ca – darken on hover (conventional) */
+  --color-accent-dim:    224 225 252;   /* #e0e1fc – tint for badges/selections */
+  --color-danger:        220 38 38;     /* #dc2626 */
+  --color-success:       22 163 74;     /* #16a34a */
+  --color-warning:       217 119 6;     /* #d97706 */
+}
+
+/* ── Dark theme ──────────────────────────────────────────────────────────── */
+html.dark {
+  --color-base:          13 15 20;      /* #0d0f14 */
+  --color-surface:       19 22 30;      /* #13161e */
+  --color-elevated:      26 29 40;      /* #1a1d28 */
+  --color-overlay:       33 37 58;      /* #21253a */
+  --color-border:        37 40 54;      /* #252836 */
+  --color-border-strong: 54 59 82;      /* #363b52 */
+  --color-text-primary:  226 232 240;   /* #e2e8f0 */
+  --color-text-secondary:136 146 164;   /* #8892a4 */
+  --color-text-muted:    85 96 112;     /* #556070 */
+  --color-accent:        99 102 241;
+  --color-accent-hover:  124 127 245;
+  --color-accent-dim:    45 47 107;     /* #2d2f6b */
+  --color-danger:        239 68 68;
+  --color-success:       34 197 94;
+  --color-warning:       245 158 11;
+}
+
+/* ── Corporate theme ─────────────────────────────────────────────────────── */
+html.corporate {
+  --color-base:          10 11 15;       /* #0a0b0f – near-black charcoal */
+  --color-surface:       15 17 23;       /* #0f1117 */
+  --color-elevated:      21 24 32;       /* #151820 */
+  --color-overlay:       28 32 44;       /* #1c202c */
+  --color-border:        36 41 58;       /* #24293a */
+  --color-border-strong: 52 59 80;       /* #343b50 */
+  --color-text-primary:  215 222 233;    /* #d7dee9 – cool crisp white */
+  --color-text-secondary:108 120 142;    /* #6c788e */
+  --color-text-muted:    56 66 86;       /* #384256 */
+  --color-accent:        0 120 212;      /* #0078d4 – enterprise blue */
+  --color-accent-hover:  16 140 232;     /* #108ce8 */
+  --color-accent-dim:    0 44 80;        /* #002c50 */
+  --color-danger:        239 68 68;
+  --color-success:       34 197 94;
+  --color-warning:       245 158 11;
+}
+
+/* ── FileFlow brand theme ────────────────────────────────────────────────── */
+/*   Pink #FF2D95 · Purple #6F259F · Orange #FF5A00 (Sunset Flow gradient)    */
+/*   Secondary: Blue #5FB3C1 · Lavender #EADCEA · Yellow #FDCB63              */
+/* Accent = Pink; surfaces = deep purple derived from #6F259F.                */
+html.fileflow {
+  --color-base:           14  8  26;     /* #0e081a – deep purple-black */
+  --color-surface:        23 13  42;     /* #170d2a */
+  --color-elevated:       33 20  58;     /* #21143a */
+  --color-overlay:        46 28  80;     /* #2e1c50 */
+  --color-border:         56 34  96;     /* #382260 */
+  --color-border-strong:  90 54 146;     /* #5a3692 */
+  --color-text-primary:  244 236 252;    /* #f4ecfc – soft brand white */
+  --color-text-secondary:190 162 209;    /* #bea2d1 – brand lavender teinte */
+  --color-text-muted:    128 100 168;    /* #8064a8 – deep lavender */
+  --color-accent:        255  45 149;    /* #ff2d95 – brand Pink */
+  --color-accent-hover:  255  90 172;    /* #ff5aac – lighter pink on hover */
+  --color-accent-dim:     78  24  84;    /* #4e1854 – pink→purple selection tint */
+  --color-danger:        244  63  94;
+  --color-success:        45 204 133;
+  --color-warning:       253 203  99;    /* #fdcb63 – brand Yellow */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: rgb(var(--color-base));
+  color: rgb(var(--color-text-primary));
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv11', 'ss01';
+  letter-spacing: -0.006em;
+}
+
+/* Tabular numerals keep data tables, sizes and counters aligned. */
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+/* ── FileFlow brand system ───────────────────────────────────────────────── */
+/* Fixed brand hex + gradients. These stay constant across themes so the
+   identity reads the same everywhere. */
+:root {
+  --brand-pink:     #FF2D95;
+  --brand-purple:   #6F259F;
+  --brand-orange:   #FF5A00;
+  --brand-blue:     #5FB3C1;
+  --brand-yellow:   #FDCB63;
+  --brand-lavender: #EADCEA;
+  /* Sunset Flow — the signature brand gradient */
+  --gradient-sunset: linear-gradient(135deg, #FF5A00 0%, #FF2D95 50%, #6F259F 100%);
+  --gradient-tech:   linear-gradient(135deg, #5FB3C1 0%, #6F259F 100%);
+  --gradient-warmth: linear-gradient(135deg, #FF2D95 0%, #6F259F 100%);
+}
+
+/* Signature Sunset Flow fill — for brand marks, hero CTAs, active accents. */
+.bg-gradient-sunset { background-image: var(--gradient-sunset); }
+.bg-gradient-tech   { background-image: var(--gradient-tech); }
+.bg-gradient-warmth { background-image: var(--gradient-warmth); }
+
+/* Brand gradient text (logotype / headings). */
+.text-gradient-brand {
+  background-image: var(--gradient-sunset);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Primary brand button: Sunset Flow fill with a soft lift on hover. */
+.btn-brand {
+  background-image: var(--gradient-sunset);
+  background-size: 140% 140%;
+  background-position: 0% 50%;
+  color: #fff;
+  transition: background-position 0.35s ease, box-shadow 0.2s ease, opacity 0.15s ease;
+  box-shadow: 0 4px 14px -4px rgb(255 45 149 / 0.45);
+}
+.btn-brand:hover:not(:disabled) {
+  background-position: 100% 50%;
+  box-shadow: 0 6px 20px -4px rgb(255 45 149 / 0.55);
+}
+.btn-brand:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+/* ── Accessible keyboard focus ───────────────────────────────────────────── */
+/* Enterprise apps must be keyboard-navigable: show a clear ring on focus, but
+   only for keyboard users (focus-visible), never on mouse click. */
+:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: rgb(var(--color-accent));
+  box-shadow: 0 0 0 3px rgb(var(--color-accent) / 0.25);
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-border-strong));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-text-muted));
+}
+
+::selection {
+  background: rgb(var(--color-accent-dim));
+  color: rgb(var(--color-text-primary));
+}
+
+input, textarea, select {
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ── Markdown prose ──────────────────────────────────────────────────────── */
+.md-body {
+  color: rgb(var(--color-text-primary));
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: break-word;
+}
+.md-body h1, .md-body h2, .md-body h3,
+.md-body h4, .md-body h5, .md-body h6 {
+  color: rgb(var(--color-text-primary));
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 1.5em 0 0.5em;
+}
+.md-body h1 { font-size: 1.8em; padding-bottom: 0.3em; border-bottom: 1px solid rgb(var(--color-border)); }
+.md-body h2 { font-size: 1.45em; padding-bottom: 0.25em; border-bottom: 1px solid rgb(var(--color-border)); }
+.md-body h3 { font-size: 1.2em; }
+.md-body h4 { font-size: 1.05em; }
+.md-body h5, .md-body h6 { font-size: 0.95em; color: rgb(var(--color-text-secondary)); }
+
+.md-body p { margin: 0.8em 0; }
+.md-body p:first-child { margin-top: 0; }
+
+.md-body a { color: rgb(var(--color-accent)); text-decoration: underline; text-underline-offset: 2px; }
+.md-body a:hover { color: rgb(var(--color-accent-hover)); }
+
+.md-body strong { font-weight: 700; }
+.md-body em { font-style: italic; }
+.md-body del { text-decoration: line-through; color: rgb(var(--color-text-muted)); }
+
+.md-body code {
+  background: rgb(var(--color-elevated));
+  color: rgb(var(--color-accent));
+  border: 1px solid rgb(var(--color-border));
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.83em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.md-body pre {
+  background: rgb(var(--color-elevated));
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 8px;
+  padding: 1em 1.25em;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+.md-body pre code {
+  background: transparent;
+  border: none;
+  color: rgb(var(--color-text-secondary));
+  padding: 0;
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+
+.md-body ul, .md-body ol { margin: 0.75em 0; padding-left: 1.75em; }
+.md-body li { margin: 0.25em 0; }
+.md-body li > ul, .md-body li > ol { margin: 0.25em 0; }
+
+.md-body blockquote {
+  border-left: 3px solid rgb(var(--color-accent));
+  color: rgb(var(--color-text-secondary));
+  background: rgb(var(--color-elevated) / 0.5);
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  border-radius: 0 6px 6px 0;
+}
+.md-body blockquote p { margin: 0.25em 0; }
+
+.md-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.9em;
+}
+.md-body th {
+  background: rgb(var(--color-elevated));
+  border: 1px solid rgb(var(--color-border));
+  padding: 0.5em 0.75em;
+  font-weight: 600;
+  color: rgb(var(--color-text-primary));
+}
+.md-body td {
+  border: 1px solid rgb(var(--color-border));
+  padding: 0.45em 0.75em;
+  color: rgb(var(--color-text-secondary));
+}
+.md-body tr:nth-child(even) td { background: rgb(var(--color-elevated) / 0.4); }
+
+.md-body hr {
+  border: none;
+  border-top: 1px solid rgb(var(--color-border));
+  margin: 1.75em 0;
+}
+.md-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 0.5em 0;
+}

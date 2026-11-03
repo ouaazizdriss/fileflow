@@ -1,0 +1,17 @@
+# cargo-audit configuration.
+#
+# RUSTSEC-2023-0071 (rsa "Marvin Attack" timing side-channel): the `rsa` crate is
+# pulled in transitively by `jsonwebtoken`'s `rust_crypto` feature to support
+# RS256/RS384/RS512. FileFlow issues and verifies HS256 (HMAC-SHA256) tokens
+# ONLY and never performs an RSA private-key operation, so the vulnerable code
+# path is unreachable. There is no fixed version of `rsa` available. If we ever
+# add RSA-signed JWTs, remove this ignore and switch the crypto backend.
+#
+# RUSTSEC-2026-0387 (crypto-bigint 0.5 constant-time violations): pulled in by
+# the same backend via p256/p384 for ES256/ES384. Tokens are HS256 only:
+# `Validation::default()` accepts HS256 alone and keys are HMAC secrets
+# (`from_secret`), so no elliptic-curve operation ever runs. No jsonwebtoken
+# release (10.x or 11.1) moves off crypto-bigint 0.5 yet; drop this ignore
+# once one does.
+[advisories]
+ignore = ["RUSTSEC-2023-0071", "RUSTSEC-2026-0387"]

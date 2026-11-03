@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="FileFlow is a self-hosted file platform with resumable uploads, rich previews, share links and team folders, in one container.">
+<title>FileFlow Product Tour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Fragment+Mono&display=swap">
+<style>
+/* Layout: a file manager's desk. Each section is a folder with its tab on top, opened at the path where the feature lives in the app. */
+:root {
+  --paper: #f3f1f7; --sheet: #ffffff; --ink: #1a1030; --sub: #5b5270; --rule: #e0dbe9; --rule-ink: #1a1030;
+  --pink: #c21f7b; --orange: #d9441e; --folder: #e9a920; --tint: #fbe7f2;
+  --ok: #157a49; --stop: #c0262f; --hold: #9c5d00;
+  --grad: linear-gradient(90deg, #ff4e27, #df2b97);
+  --night: #0e081a; --night-2: #170d2a; --night-fg: #efe9f7; --night-sub: #a89cbd; --night-rule: #2c2142;
+  --display: "Unbounded", "Arial Black", Arial, sans-serif;
+  --body: "Hanken Grotesk", "Segoe UI", Arial, sans-serif;
+  --mono: "Fragment Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --col: 1160px; --r: 14px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #0e081a; --sheet: #170d2a; --ink: #efe9f7; --sub: #a89cbd; --rule: #2c2142; --rule-ink: #efe9f7;
+  --pink: #ff5fae; --orange: #ff7a52; --folder: #f5c24a; --tint: #2a1236;
+  --ok: #5fd39a; --stop: #ff7a7f; --hold: #f0b44c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #0e081a; --sheet: #170d2a; --ink: #efe9f7; --sub: #a89cbd; --rule: #2c2142; --rule-ink: #efe9f7;
+  --pink: #ff5fae; --orange: #ff7a52; --folder: #f5c24a; --tint: #2a1236;
+  --ok: #5fd39a; --stop: #ff7a7f; --hold: #f0b44c; color-scheme: dark }
+
+* { box-sizing: border-box }
+html { color-scheme: light } body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased }
+.band { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 88px }
+.wrap { max-width: var(--col); margin: 0 auto; display: flex; flex-direction: column; gap: 40px; min-width: 0 }
+h1, h2, h3 { margin: 0; text-wrap: balance }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(38px, 5.6vw, 74px); line-height: 1.02; letter-spacing: -0.035em }
+h2 { font-family: var(--display); font-weight: 650; font-size: clamp(28px, 3.6vw, 46px); line-height: 1.06; letter-spacing: -0.03em }
+h3 { font-family: var(--body); font-weight: 700; font-size: 19px; line-height: 1.3 }
+p { margin: 0; max-width: 62ch }
+.lede { font-size: 19px; color: var(--sub) }
+.mono { font-family: var(--mono); font-size: .86em }
+:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px }
+.grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent }
+
+/* Folder: a tab on top, the sheet below. The tab shows the path where this lives in FileFlow. */
+.folder { position: relative; background: var(--sheet); border: 1px solid var(--rule); border-radius: 0 var(--r) var(--r) var(--r); padding: clamp(22px, 4vw, 48px); display: flex; flex-direction: column; gap: 36px; min-width: 0; margin-top: 34px }
+.folder > .tab { position: absolute; left: -1px; top: -34px; height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 18px 0 14px; background: var(--sheet); border: 1px solid var(--rule); border-bottom: 0; border-radius: 12px 12px 0 0; font-family: var(--mono); font-size: 12.5px; color: var(--sub); max-width: calc(100% - 24px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.folder > .tab svg { flex: none }
+.folder > .tab b { color: var(--ink); font-weight: 400 }
+.fhead { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 16px 48px; align-items: end }
+@media (max-width: 860px) { .fhead { grid-template-columns: minmax(0, 1fr) } }
+
+/* Top bar */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper) }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.top .in { max-width: var(--col); margin: 0 auto; height: 58px; display: flex; align-items: center; gap: 26px }
+.logo { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: -0.03em }
+.logo i { width: 28px; height: 28px; border-radius: 9px; background: var(--grad); display: grid; place-items: center }
+.nav { margin-left: auto; display: flex; gap: 22px; font-size: 15px }
+.nav a { color: var(--sub); text-decoration: none; transition: color .18s } .nav a:hover { color: var(--ink) }
+.gh { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; background: var(--ink); color: var(--paper); text-decoration: none; font-weight: 600; font-size: 14px; transition: opacity .18s } .gh:hover { opacity: .85 }
+@media (max-width: 840px) { .nav { display: none } .gh { margin-left: auto } }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 56px; align-items: center }
+@media (max-width: 980px) { .hero { grid-template-columns: minmax(0, 1fr); gap: 40px } }
+.hero-copy { display: flex; flex-direction: column; gap: 24px; min-width: 0 }
+.ticks { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; color: var(--sub); margin: 0; padding: 0; list-style: none }
+.ticks li { display: flex; gap: 8px; align-items: center }
+.ticks li::before { content: ""; width: 14px; height: 14px; border-radius: 4px; background: var(--grad); flex: none }
+
+/* Transfer panel: always night, like the app */
+.xfer { background: var(--night); color: var(--night-fg); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 16px; min-width: 0; box-shadow: 0 24px 60px -28px rgb(26 16 48 / .55) }
+.xfer-top { display: flex; align-items: center; gap: 12px; min-width: 0 }
+.xfer-ico { width: 42px; height: 42px; border-radius: 11px; background: var(--night-2); display: grid; place-items: center; flex: none }
+.xfer-name { min-width: 0; display: flex; flex-direction: column }
+.xfer-name b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.xfer-name span { font-family: var(--mono); font-size: 12px; color: var(--night-sub) }
+.xfer-top .sp { flex: 1 }
+.pause { appearance: none; background: transparent; border: 1px solid var(--night-rule); color: var(--night-sub); border-radius: 999px; font: 500 12px var(--mono); padding: 0 12px; min-height: 30px; cursor: pointer; transition: color .18s, border-color .18s }
+.pause:hover { color: var(--night-fg); border-color: var(--night-sub) }
+.chunks { display: grid; grid-template-columns: repeat(20, minmax(0, 1fr)); gap: 3px }
+.chunks i { aspect-ratio: 1; border-radius: 3px; background: var(--night-2); transition: background .2s }
+.chunks i.on { background: #df2b97 } .chunks i.on.w { background: #ff4e27 }
+.chunks i.held { background: #6b5a86 }
+.meter { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12.5px; color: var(--night-sub); gap: 12px; flex-wrap: wrap }
+.meter b { color: var(--night-fg); font-weight: 400 }
+.xfer-msg { min-height: 48px; border-radius: 10px; padding: 12px 14px; font-size: 14.5px; background: var(--night-2); display: flex; gap: 10px; align-items: flex-start }
+.xfer-msg .dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 7px; flex: none; background: #df2b97 }
+.xfer-msg.lost .dot { background: #ffb547 } .xfer-msg.done .dot { background: #5fd39a }
+
+/* Figures */
+.figs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--rule-ink) }
+.figs > div { padding: 18px 18px 0 0; display: flex; flex-direction: column; gap: 6px; min-width: 0 }
+.figs > div + div { padding-left: 18px; border-left: 1px solid var(--rule) }
+.figs .n { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 3.8vw, 48px); line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums }
+.figs .l { font-size: 14.5px; color: var(--sub) }
+@media (max-width: 900px) { .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 0 } .figs > div:nth-child(odd) { padding-left: 0; border-left: 0 } .figs > div:last-child { grid-column: 1 / -1 } }
+
+/* Feature listing, styled like FileFlow's list view */
+.listing { border: 1px solid var(--rule); border-radius: 12px; overflow: hidden }
+.lrow { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 3fr); gap: 16px; padding: 14px 18px; align-items: start; border-top: 1px solid var(--rule); transition: background .18s }
+.lrow:first-child { border-top: 0 }
+.lrow.h { font-size: 12.5px; color: var(--sub); font-weight: 600; padding-block: 10px; background: var(--paper) }
+.lrow:not(.h):hover { background: var(--tint) }
+.lrow .nm { display: flex; gap: 10px; align-items: center; font-weight: 700 }
+.lrow .ds { color: var(--sub); font-size: 15.5px }
+.lrow .wh { font-family: var(--mono); font-size: 12px; color: var(--sub) }
+@media (max-width: 760px) { .lrow { grid-template-columns: minmax(0, 1fr); gap: 4px } .lrow.h { display: none } }
+.listing.play .lrow:not(.h) { animation: slide .4s backwards ease-out; animation-delay: calc(var(--i) * 40ms) }
+@keyframes slide { from { opacity: .25; transform: translateX(-8px) } }
+
+/* Controls shared by the two simulators */
+.sim { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 32px; align-items: start }
+@media (max-width: 960px) { .sim { grid-template-columns: minmax(0, 1fr) } }
+.ctl { display: flex; flex-direction: column; gap: 22px; min-width: 0 }
+.lab { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--sub); margin-bottom: 8px; display: block }
+.chips { display: flex; flex-wrap: wrap; gap: 8px }
+.chips input { position: absolute; opacity: 0; pointer-events: none }
+.chips label { cursor: pointer; min-height: 40px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 10px; border: 1px solid var(--rule); background: var(--paper); font-weight: 600; font-size: 15px; transition: background .18s, border-color .18s, color .18s }
+.chips label:hover { border-color: var(--pink) }
+.chips input:checked + label { background: var(--grad); color: #fff; border-color: transparent }
+.chips input:focus-visible + label { outline: 2px solid var(--pink); outline-offset: 2px }
+.row { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 14px; border: 1px solid var(--rule); border-radius: 12px; flex-wrap: wrap }
+.row .t { flex: 1; font-weight: 600; min-width: 140px }
+.switch { appearance: none; width: 44px; height: 26px; border-radius: 999px; background: var(--rule); position: relative; cursor: pointer; transition: background .18s; flex: none }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .18s; box-shadow: 0 1px 2px rgb(0 0 0 / .25) }
+.switch:checked { background: #df2b97 } .switch:checked::after { transform: translateX(18px) }
+.field { min-height: 40px; border-radius: 9px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); padding: 0 12px; font: 500 15px var(--body); min-width: 0 }
+.field:disabled { opacity: .45 }
+.num { width: 72px }
+.btn { appearance: none; min-height: 44px; padding: 0 18px; border-radius: 11px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); font: 700 15px var(--body); cursor: pointer; transition: background .18s, border-color .18s, transform .1s }
+.btn:hover { border-color: var(--pink) } .btn:active { transform: translateY(1px) }
+.btn.go { background: var(--grad); color: #fff; border-color: transparent }
+.btn.go:hover { filter: brightness(1.05) }
+.btn:disabled { opacity: .45; cursor: not-allowed }
+
+/* Link card + recipient log */
+.out { display: flex; flex-direction: column; gap: 14px; min-width: 0 }
+.card { border: 1px solid var(--rule); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 12px; background: var(--paper); min-width: 0 }
+.url { font-family: var(--mono); font-size: 13.5px; word-break: break-all; padding: 10px 12px; border-radius: 9px; background: var(--sheet); border: 1px dashed var(--rule) }
+.url b { color: var(--pink); font-weight: 400 }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px }
+.facts div { font-size: 13.5px; color: var(--sub); min-width: 0 } .facts b { display: block; color: var(--ink); font-size: 15px }
+@media (max-width: 520px) { .facts { grid-template-columns: minmax(0, 1fr) } }
+.rcpt { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.log { background: var(--night); color: var(--night-fg); border-radius: 12px; padding: 14px 16px; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; min-height: 150px; max-height: 260px; overflow: auto }
+.log div { white-space: pre-wrap; word-break: break-word; animation: logline .2s ease-out }
+@keyframes logline { from { opacity: 0 } }
+.log .c2 { color: #5fd39a } .log .c4 { color: #ffb547 } .log .c5 { color: #ff8a8f } .log .dim { color: var(--night-sub) }
+
+/* Gatekeeper checks */
+.checks { list-style: none; margin: 0; padding: 0; border: 1px solid var(--rule); border-radius: 14px; overflow: hidden }
+.checks li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 12px 16px; border-top: 1px solid var(--rule); transition: background .2s }
+.checks li:first-child { border-top: 0 }
+.checks .ic { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; background: var(--rule); margin-top: 1px }
+.checks li.pass .ic { background: var(--ok) } .checks li.fail .ic { background: var(--stop) } .checks li.skip { opacity: .45 }
+.checks li.fail { background: color-mix(in srgb, var(--stop) 9%, transparent) }
+.checks .nm { font-weight: 700 } .checks .ds { display: block; font-size: 14px; color: var(--sub); font-weight: 400 }
+.checks .st { font-family: var(--mono); font-size: 12px; color: var(--sub); white-space: nowrap }
+.checks li.fail .st { color: var(--stop) } .checks li.pass .st { color: var(--ok) }
+.verdict { border-radius: 12px; padding: 14px 16px; font-weight: 600; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap }
+.verdict.ok { background: color-mix(in srgb, var(--ok) 12%, transparent); color: var(--ok) }
+.verdict.bad { background: color-mix(in srgb, var(--stop) 12%, transparent); color: var(--stop) }
+.verdict code { font-family: var(--mono); font-weight: 400; font-size: 13px; color: var(--ink) }
+.presets { display: flex; flex-wrap: wrap; gap: 8px }
+.preset { appearance: none; min-height: 36px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); font: 500 13px var(--mono); cursor: pointer; transition: border-color .18s }
+.preset:hover { border-color: var(--pink) }
+.inrow { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px }
+input[type=range] { width: 100%; accent-color: #df2b97 }
+
+/* Screens */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
+.stab { appearance: none; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: var(--sub); font: 600 15px var(--body); cursor: pointer; transition: background .18s, color .18s }
+.stab:hover { color: var(--ink); background: var(--paper) }
+.stab[aria-selected="true"] { background: var(--tint); color: var(--pink) }
+.tabs .sp { flex: 1 }
+.linkbtn { appearance: none; background: none; border: 0; color: var(--sub); font: 500 13px var(--mono); cursor: pointer; min-height: 40px; transition: color .18s } .linkbtn:hover { color: var(--ink) }
+.shot { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 3fr); gap: 28px; align-items: start }
+@media (max-width: 960px) { .shot { grid-template-columns: minmax(0, 1fr) } }
+.frame { border-radius: 14px; overflow: hidden; background: var(--night); aspect-ratio: 1440 / 860; max-width: 100%; box-shadow: 0 20px 50px -30px rgb(26 16 48 / .6) }
+.frame img { display: block; width: 100%; height: 100%; object-fit: cover; animation: fadein .45s ease }
+@keyframes fadein { from { opacity: .3 } }
+.shot-copy { display: flex; flex-direction: column; gap: 10px; min-width: 0 }
+.shot-copy p { color: var(--sub); font-size: 15.5px }
+.crumb { font-family: var(--mono); font-size: 12px; color: var(--sub) }
+
+/* Formats */
+.fmts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px }
+@media (max-width: 900px) { .fmts { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.fg h3 { font-size: 15px; margin-bottom: 10px }
+.fg div { display: flex; flex-wrap: wrap; gap: 6px }
+.ext { font-family: var(--mono); font-size: 12.5px; padding: 4px 9px; border-radius: 7px; background: var(--paper); border: 1px solid var(--rule) }
+
+/* Security */
+.sec { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 40px }
+@media (max-width: 960px) { .sec { grid-template-columns: minmax(0, 1fr) } }
+.ctrl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column }
+.ctrl li { padding: 12px 0; border-top: 1px solid var(--rule); display: flex; flex-direction: column; gap: 2px }
+.ctrl li b { font-weight: 700 } .ctrl li span { color: var(--sub); font-size: 15px }
+.sev { display: flex; flex-direction: column; gap: 10px }
+.sevrow { display: grid; grid-template-columns: 108px minmax(0, 1fr) 70px; gap: 12px; align-items: center; font-size: 14.5px }
+.sevrow .bar { height: 26px; display: flex; gap: 3px }
+.sevrow .bar i { flex: 0 0 26px; border-radius: 6px; background: var(--ok); display: grid; place-items: center; color: #fff; font-style: normal; font-size: 11px; font-family: var(--mono) }
+.sev.play .bar i { animation: popin .35s backwards cubic-bezier(.2,1.4,.4,1); animation-delay: calc(var(--i) * 60ms) }
+@keyframes popin { from { transform: scale(.4); opacity: 0 } }
+.sevrow .st { font-family: var(--mono); font-size: 12px; color: var(--ok); text-align: right }
+.pipe { display: flex; flex-wrap: wrap; gap: 8px }
+.job { font-family: var(--mono); font-size: 12.5px; padding: 8px 12px; border-radius: 9px; border: 1px solid var(--rule); background: var(--paper); display: flex; gap: 8px; align-items: center }
+.job::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok) }
+.cap { font-size: 14px; color: var(--sub) }
+
+/* Compare + audiences */
+.tw { overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px }
+.tw table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 15.5px }
+.tw th, .tw td { text-align: left; padding: 14px 18px; border-top: 1px solid var(--rule); vertical-align: top }
+.tw thead th { border-top: 0; font-size: 13px; color: var(--sub); background: var(--paper) }
+.tw td:nth-child(2) { font-weight: 700; color: var(--pink) }
+.aud { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 }
+.aud > div { padding-right: 28px; display: flex; flex-direction: column; gap: 8px; min-width: 0 }
+.aud > div + div { padding-left: 28px; border-left: 1px solid var(--rule) }
+.aud p { color: var(--sub); font-size: 15.5px }
+@media (max-width: 860px) { .aud { grid-template-columns: minmax(0, 1fr); gap: 24px } .aud > div, .aud > div + div { padding: 0; border: 0 } }
+
+/* Deploy */
+.dep { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 32px }
+@media (max-width: 960px) { .dep { grid-template-columns: minmax(0, 1fr) } }
+.code { position: relative; background: var(--night); color: var(--night-fg); border-radius: 14px; min-width: 0 }
+.code pre { margin: 0; padding: 20px; overflow-x: auto; font-family: var(--mono); font-size: 13px; line-height: 1.7 }
+.code .k { color: #ff8fc8 } .code .d { color: var(--night-sub) }
+.code .copy { position: absolute; top: 10px; right: 10px; appearance: none; background: transparent; border: 1px solid var(--night-rule); color: var(--night-sub); border-radius: 8px; font: 500 12px var(--mono); padding: 0 10px; min-height: 30px; cursor: pointer; transition: color .18s }
+.code .copy:hover { color: var(--night-fg) }
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: flex; flex-direction: column }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-top: 1px solid var(--rule) }
+.steps li::before { content: counter(s); width: 32px; height: 32px; border-radius: 10px; background: var(--grad); color: #fff; font-family: var(--display); font-weight: 700; display: grid; place-items: center; font-size: 14px }
+.steps li span { color: var(--sub); font-size: 15px; display: block }
+
+footer.band { padding-block: 36px }
+footer .wrap { flex-direction: row; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 14.5px; color: var(--sub) }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } }
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="in">
+    <a class="logo" href="#top"><i aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></i>FileFlow</a>
+    <nav class="nav" aria-label="Sections"><a href="#share">Share links</a><a href="#upload">Uploads</a><a href="#screens">Screens</a><a href="#security">Security</a><a href="#deploy">Deploy</a></nav>
+    <a class="gh" href="https://github.com/ouaazizdriss/fileflow">GitHub</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="band">
+    <div class="wrap">
+      <div class="hero">
+        <div class="hero-copy">
+          <h1>Own your files. <span class="grad-text">Keep the cloud experience.</span></h1>
+          <p class="lede">FileFlow is a self-hosted file platform with resumable uploads, rich previews, share links and team folders. It runs as one container on your own server, so your files stay on your disk.</p>
+          <ul class="ticks"><li>No fee per seat</li><li>One container, no external database</li><li>English and French</li></ul>
+        </div>
+        <div class="xfer" aria-live="polite" aria-label="Example of a resumable upload">
+          <div class="xfer-top">
+            <div class="xfer-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff7ab8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg></div>
+            <div class="xfer-name"><b>site-walkthrough-final.mov</b><span>600 MB → /Clients/Northwind Legal</span></div>
+            <span class="sp"></span>
+            <button class="pause" id="x-pause" type="button" aria-label="Pause the upload animation">pause</button>
+          </div>
+          <div class="chunks" id="chunks" aria-hidden="true"></div>
+          <div class="meter"><span>chunk <b id="x-n">120</b> of 120 · 5 MB each</span><span id="x-pct"><b>100%</b></span></div>
+          <div class="xfer-msg done" id="x-msg"><span class="dot"></span><span>Upload finalised. If a file of that name already existed, its previous version was archived.</span></div>
+        </div>
+      </div>
+      <div class="figs" id="figs">
+        <div><span class="n" data-count="0" data-prefix="€">€0</span><span class="l">per seat, for any number of users</span></div>
+        <div><span class="n" data-count="1">1</span><span class="l">container, backed by SQLite</span></div>
+        <div><span class="n" data-count="17">17</span><span class="l">file types previewed in the browser</span></div>
+        <div><span class="n" data-count="174">174</span><span class="l">automated tests in CI</span></div>
+        <div><span class="n" data-count="11" data-suffix="/11">11/11</span><span class="l">findings of the October 2026 audit fixed</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" style="padding-top:24px">
+    <div class="wrap">
+      <div class="folder">
+        <div class="tab"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>My files › <b>Features</b></div>
+        <div class="fhead"><h2>Everything a team expects from a cloud drive.</h2><p class="lede">The day-to-day workflow people know from hosted drives, from dragging in a huge file to sending a client a link.</p></div>
+        <div class="listing" id="listing">
+          <div class="lrow h"><span>Name</span><span>What it does</span><span>Where in FileFlow</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="share" style="padding-top:24px">
+    <div class="wrap">
+      <div class="folder">
+        <div class="tab"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Brand assets › cover-harbor.jpg › <b>Share link…</b></div>
+        <div class="fhead"><h2>Share links that expire, lock and run out.</h2><p class="lede">Build a link the way the Share Link dialog does, then play the recipient. Every response below matches what the FileFlow server sends.</p></div>
+        <div class="sim">
+          <div class="ctl">
+            <div><span class="lab" id="exp-lab">Expires in</span>
+              <div class="chips" role="radiogroup" aria-labelledby="exp-lab">
+                <input type="radio" name="exp" id="e1" value="3600"><label for="e1">1 hour</label>
+                <input type="radio" name="exp" id="e2" value="86400"><label for="e2">24 hours</label>
+                <input type="radio" name="exp" id="e3" value="604800" checked><label for="e3">7 days</label>
+                <input type="radio" name="exp" id="e4" value="2592000"><label for="e4">30 days</label>
+                <input type="radio" name="exp" id="e5" value="31536000"><label for="e5">1 year</label>
+              </div>
+            </div>
+            <div class="row"><span class="t">Password protect</span><input class="field" id="pw" type="text" value="harbor-2027" aria-label="Link password"><input class="switch" id="pw-on" type="checkbox" role="switch" checked aria-label="Password protect"></div>
+            <div class="row"><span class="t">Limit downloads</span><input class="field num" id="lim" type="number" min="1" max="99" value="3" aria-label="Maximum downloads"><input class="switch" id="lim-on" type="checkbox" role="switch" checked aria-label="Limit downloads"></div>
+            <div><button class="btn go" id="create" type="button">Create link</button></div>
+          </div>
+          <div class="out">
+            <div class="card">
+              <div class="url" id="url">https://files.acme.io/s/<b>…</b></div>
+              <div class="facts"><div>Expires<b id="f-exp">in 7 days</b></div><div>Password<b id="f-pw">bcrypt hash</b></div><div>Downloads<b id="f-dl">0 of 3</b></div></div>
+            </div>
+            <div class="rcpt">
+              <input class="field" id="try-pw" type="text" placeholder="password the recipient types" aria-label="Password the recipient types" style="flex:1;min-width:180px">
+              <button class="btn" id="open" type="button">Open as recipient</button>
+              <button class="btn" id="later" type="button">Jump past expiry</button>
+            </div>
+            <div class="log" id="log" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="upload" style="padding-top:24px">
+    <div class="wrap">
+      <div class="folder">
+        <div class="tab"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4m0 0-4 4m4-4 4 4"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>My files › <b>Upload Files</b></div>
+        <div class="fhead"><h2>Every upload passes the same checks.</h2><p class="lede">Before a single byte is stored, the server checks the path, the name, the file type, the size and your quota. Try a name or a path, or pick a classic attack.</p></div>
+        <div class="sim">
+          <div class="ctl">
+            <div class="inrow"><label class="lab" for="g-dir">Target folder</label><input class="field" id="g-dir" type="text" value="/Clients/Northwind Legal" autocomplete="off" spellcheck="false"></div>
+            <div class="inrow"><label class="lab" for="g-name">File name</label><input class="field" id="g-name" type="text" value="hearing-exhibits.pdf" autocomplete="off" spellcheck="false"></div>
+            <div class="inrow"><label class="lab" for="g-size">Size: <span id="g-size-v" class="mono">1.2 GB</span> · your quota has 8 GB free</label><input id="g-size" type="range" min="1" max="100" value="12"></div>
+            <div><span class="lab">Try</span>
+              <div class="presets" id="presets"></div>
+            </div>
+          </div>
+          <div class="out">
+            <ol class="checks" id="checks"></ol>
+            <div class="verdict ok" id="g-verdict"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="screens" style="padding-top:24px">
+    <div class="wrap">
+      <div class="folder">
+        <div class="tab"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8"/></svg>FileFlow › <b>Screens</b></div>
+        <div class="fhead"><h2>Fast, friendly, and keyboard-aware.</h2><p class="lede">Real screens from a local install. Right-click anything for its actions, double-click to preview it without downloading.</p></div>
+        <div class="tabs" role="tablist" id="stabs"></div>
+        <div class="shot">
+          <div class="frame"><img id="s-img" alt=""></div>
+          <div class="shot-copy"><span class="crumb" id="s-crumb"></span><h3 id="s-title"></h3><p id="s-text"></p></div>
+        </div>
+        <div>
+          <h3 style="margin-bottom:14px">Previewed in the browser</h3>
+          <div class="fmts">
+            <div class="fg"><h3>Images</h3><div><span class="ext">jpg</span><span class="ext">png</span><span class="ext">svg</span></div></div>
+            <div class="fg"><h3>Video and audio</h3><div><span class="ext">mp4</span><span class="ext">webm</span><span class="ext">mp3</span></div></div>
+            <div class="fg"><h3>Documents</h3><div><span class="ext">pdf</span><span class="ext">doc</span><span class="ext">docx</span><span class="ext">ppt</span><span class="ext">pptx</span></div></div>
+            <div class="fg"><h3>Data</h3><div><span class="ext">csv</span><span class="ext">xls</span><span class="ext">xlsx</span><span class="ext">json</span></div></div>
+            <div class="fg"><h3>Text and code</h3><div><span class="ext">md</span><span class="ext">txt</span><span class="ext">+ syntax highlighting</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="security" style="padding-top:24px">
+    <div class="wrap">
+      <div class="folder">
+        <div class="tab"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg>Admin › <b>Security</b></div>
+        <div class="fhead"><h2>Built for files you can't put in someone else's cloud.</h2><p class="lede">The controls security teams ask for, a code base audited against the attacks that target file sharing, and a pipeline that keeps checking it.</p></div>
+        <div class="sec">
+          <ul class="ctrl">
+            <li><b>Two-factor authentication</b><span>TOTP with single-use recovery codes. Turning it off needs the password and a code.</span></li>
+            <li><b>Roles, groups and per-path rules</b><span>Granular permissions, with allowed paths checked segment by segment.</span></li>
+            <li><b>Full audit trail</b><span>Every login, preview, share and file action, filterable and exportable to CSV.</span></li>
+            <li><b>Session control and quotas</b><span>Log out everywhere, admin revoke, per-user storage limits.</span></li>
+            <li><b>Hardened by default</b><span>Strict CSP, Secure and SameSite cookies, rate-limited logins and links, path-traversal and symlink protection.</span></li>
+            <li><b>Your data stays put</b><span>Files live on your disk as plain files. No third-party processor.</span></li>
+          </ul>
+          <div style="display:flex;flex-direction:column;gap:28px;min-width:0">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <h3>October 2026 audit: every finding fixed</h3>
+              <div class="sev" id="sev"></div>
+              <p class="cap">A manual review found 11 issues, none critical. The two high-severity ones were in path checks and upload requests. All 11 are fixed, and each fix is tracked in the audit report.</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <h3>Security checks on every push, and weekly</h3>
+              <div class="pipe"><span class="job">semgrep</span><span class="job">cargo audit</span><span class="job">cargo deny</span><span class="job">pnpm audit</span><span class="job">trivy filesystem</span><span class="job">gitleaks</span><span class="job">fuzzing · 4 targets</span><span class="job">trivy image</span></div>
+              <p class="cap">Fuzzers cover path resolution, file-name sanitising, Range parsing and Content-Disposition. Every GitHub Action is pinned to a commit.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" style="padding-top:24px">
+    <div class="wrap">
+      <div class="folder">
+        <div class="tab"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Shared with me › <b>Why FileFlow</b></div>
+        <div class="fhead"><h2>FileFlow or a public cloud drive?</h2><p class="lede">Where data sensitivity, cost or sovereignty rules out a hosted drive, FileFlow fits.</p></div>
+        <div class="tw"><table>
+          <thead><tr><th></th><th>FileFlow</th><th>Public cloud drives</th></tr></thead>
+          <tbody>
+            <tr><td>Where your data lives</td><td>Your own server</td><td>A vendor's data center</td></tr>
+            <tr><td>Pricing model</td><td>One deployment, unlimited users</td><td>A recurring fee per seat</td></tr>
+            <tr><td>Admin and audit control</td><td>Full, self-managed</td><td>Limited to the vendor's tooling</td></tr>
+            <tr><td>Retention and policy</td><td>You decide</td><td>Vendor-defined</td></tr>
+            <tr><td>Lock-in</td><td>None, files stay plain files on disk</td><td>High</td></tr>
+          </tbody>
+        </table></div>
+        <div class="aud">
+          <div><h3>SMBs and agencies</h3><p>A shared drive and a client portal without per-seat bills.</p></div>
+          <div><h3>Regulated industries</h3><p>Healthcare, legal and finance teams that must keep data on-premises.</p></div>
+          <div><h3>IT teams and MSPs</h3><p>A file platform you run for yourself or for clients.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="deploy" style="padding-top:24px">
+    <div class="wrap">
+      <div class="folder">
+        <div class="tab"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 17 6-6-6-6M12 19h8"/></svg>~ › <b>docker compose up -d</b></div>
+        <div class="fhead"><h2>Live in three steps.</h2><p class="lede">One distroless image, a few environment variables and no external database to manage. Run it on a VPS, a NAS or in your data center.</p></div>
+        <div class="dep">
+          <div class="code"><button class="copy" type="button">copy</button><pre><span class="d"># docker-compose.yml</span>
+<span class="k">services:</span>
+  fileflow:
+    image: fileflow:latest
+    ports: ["8080:8080"]
+    environment:
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      MAX_UPLOAD_MB: 50000
+      ROOT_DIR: /data
+      CONFIG_DIR: /config
+    volumes:
+      - ./data:/data
+      - ./config:/config
+
+<span class="d">$</span> docker compose up -d</pre></div>
+          <ol class="steps">
+            <li><div><b>Pull and configure</b><span>Set an admin password and the upload limit. The JWT secret is generated on first start.</span></div></li>
+            <li><div><b>Run it anywhere</b><span>SQLite-backed, single container, with a built-in health check.</span></div></li>
+            <li><div><b>Invite your team</b><span>Create users and groups, set quotas, and start sharing.</span></div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="band">
+  <div class="wrap"><span><b style="color:var(--ink)">FileFlow</b>, self-hosted file management</span><span>Rust backend · React frontend · English and French</span></div>
+</footer>
+
+<script>
+(() => {
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/* ---------- Hero: a resumable upload, 5 MB chunks, with a dropped connection ---------- */
+const N = 120, cells = [];
+const grid = $('#chunks');
+for (let i = 0; i < N; i++) { const c = document.createElement('i'); c.className = 'on' + (i % 7 === 0 ? ' w' : ''); grid.appendChild(c); cells.push(c); }
+let paused = reduced;
+const pb = $('#x-pause');
+const setPb = () => { pb.textContent = paused ? 'play' : 'pause'; pb.setAttribute('aria-label', paused ? 'Play the upload animation' : 'Pause the upload animation'); };
+setPb(); pb.addEventListener('click', () => { paused = !paused; setPb(); });
+const msg = (cls, text) => { const m = $('#x-msg'); m.className = 'xfer-msg ' + cls; m.innerHTML = `<span class="dot"></span><span>${text}</span>`; };
+const meter = (n) => { $('#x-n').textContent = n; $('#x-pct').innerHTML = `<b>${Math.round((n / N) * 100)}%</b>`; };
+async function wait(ms) { let t = 0; while (t < ms) { await sleep(50); if (!paused) t += 50; } }
+(async () => {
+  await sleep(3500);
+  for (;;) {
+    while (paused) await sleep(200);
+    cells.forEach((c) => (c.className = '')); meter(0); msg('', 'Uploading in 5 MB chunks. Each one is stored as it arrives.');
+    for (let i = 0; i < N; i++) {
+      await wait(32);
+      cells[i].className = 'on' + (i % 7 === 0 ? ' w' : ''); meter(i + 1);
+      if (i === 53) {
+        msg('lost', 'Connection lost. Chunks 1 to 54 are safe on the server, which keeps an unfinished upload for 6 hours.');
+        cells.slice(0, 54).forEach((c) => (c.className = 'held'));
+        await wait(2600);
+        msg('', 'Back online. Resuming at chunk 55, nothing is sent twice.');
+        cells.slice(0, 54).forEach((c, k) => (c.className = 'on' + (k % 7 === 0 ? ' w' : '')));
+        await wait(1200);
+      }
+    }
+    msg('done', 'Upload finalised. If a file of that name already existed, its previous version was archived.');
+    await wait(5000);
+  }
+})();
+
+/* ---------- Feature listing ---------- */
+const ICON = { folder: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--folder)" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>' };
+const FEATS = [
+  ['Resumable uploads', 'Drag and drop with chunked transfers, so multi-gigabyte files survive flaky connections.', 'Upload Files'],
+  ['Rich previews', 'Images, video, audio, PDF, Markdown, CSV, Excel, Word and PowerPoint, plus code with syntax highlighting.', 'double-click a file'],
+  ['Share links', 'Public links with an expiry, an optional password and a download limit, down to one-time links.', 'right-click › Share link…'],
+  ['Team collaboration', 'Team folders and direct shares between users, with read or read-write access.', 'Team folders, Shared with me'],
+  ['Upload requests', 'A drop-box link so clients and partners can send you files without an account.', 'Upload requests'],
+  ['Versions and trash', 'Overwriting a file keeps its previous version, and deleted items go to a Trash you can restore from.', 'right-click › Version History'],
+  ['Search and tags', 'Search, tags and favorites keep large libraries easy to move around.', 'Ctrl+F, Search by Tag'],
+  ['Polished and localized', 'Light and dark themes, keyboard shortcuts, English and French.', 'top bar'],
+];
+$('#listing').insertAdjacentHTML('beforeend', FEATS.map(([n, d, w], i) => `<div class="lrow" style="--i:${i}"><span class="nm">${ICON.folder}${esc(n)}</span><span class="ds">${esc(d)}</span><span class="wh">${esc(w)}</span></div>`).join(''));
+
+/* ---------- Share link simulator (rules from backend/src/shares.rs) ---------- */
+const EXPLAB = { 3600: 'in 1 hour', 86400: 'in 24 hours', 604800: 'in 7 days', 2592000: 'in 30 days', 31536000: 'in 1 year' };
+let link = null;
+const log = (cls, t) => { const l = $('#log'); l.insertAdjacentHTML('beforeend', `<div class="${cls}">${esc(t)}</div>`); l.scrollTop = l.scrollHeight; };
+const hex = () => { const a = new Uint8Array(16); try { crypto.getRandomValues(a); } catch { for (let i = 0; i < 16; i++) a[i] = (i * 73 + 41) & 255; } return [...a].map((b) => b.toString(16).padStart(2, '0')).join(''); };
+function syncInputs() { $('#pw').disabled = !$('#pw-on').checked; $('#lim').disabled = !$('#lim-on').checked; }
+function create(silent) {
+  syncInputs();
+  const exp = +document.querySelector('input[name=exp]:checked').value;
+  const pw = $('#pw-on').checked && $('#pw').value ? $('#pw').value : null;
+  const lim = $('#lim-on').checked ? Math.max(0, Math.floor(+$('#lim').value || 0)) || null : null;
+  link = { token: hex(), exp, pw, lim, count: 0, fails: 0, expired: false };
+  $('#url').innerHTML = `https://files.acme.io/s/<b>${link.token}</b>`;
+  $('#f-exp').textContent = EXPLAB[exp];
+  $('#f-pw').textContent = pw ? 'stored as a bcrypt hash' : 'none';
+  $('#f-dl').textContent = lim ? `0 of ${lim}${lim === 1 ? ' (one-time)' : ''}` : 'no limit';
+  $('#try-pw').disabled = !pw; $('#try-pw').value = pw ? '' : '';
+  $('#log').innerHTML = '';
+  if (!silent) log('dim', `POST /api/shares → 200 · token of 128 random bits, expires ${EXPLAB[exp]}`);
+  else log('dim', 'Create a link, then open it as the recipient.');
+}
+function open() {
+  if (!link) return;
+  const path = `GET /s/${link.token.slice(0, 8)}…`;
+  if (link.fails >= 5) return log('c4', `${path} → 429 · Too many attempts. Try again later. (locked for 15 minutes)`);
+  if (link.expired) return log('c4', `${path} → 404 · Share link not found or expired`);
+  if (link.lim && link.count >= link.lim) return log('c4', `${path} → 404 · This share link has reached its download limit`);
+  if (link.pw) {
+    const typed = $('#try-pw').value;
+    if (typed !== link.pw) {
+      link.fails++;
+      return log('c5', `${path} → password page again · wrong password (${link.fails} of 5 before a 15-minute lock)`);
+    }
+    link.fails = 0;
+  }
+  link.count++;
+  $('#f-dl').textContent = link.lim ? `${link.count} of ${link.lim}` : `${link.count}, no limit`;
+  log('c2', `${path} → 200 · cover-harbor.jpg, 64.4 KB${link.lim ? ` (download ${link.count} of ${link.lim})` : ''}`);
+}
+$('#create').addEventListener('click', () => create(false));
+$('#open').addEventListener('click', open);
+$('#later').addEventListener('click', () => { if (!link) return; link.expired = true; $('#f-exp').textContent = 'expired'; log('dim', `… ${EXPLAB[link.exp].replace('in ', '')} later. The link is deleted the next time anyone asks for it.`); });
+['pw-on', 'lim-on'].forEach((id) => $('#' + id).addEventListener('change', syncInputs));
+create(true);
+
+/* ---------- Upload gatekeeper (rules from backend/src/files.rs and uploads.rs) ---------- */
+const BLOCKED = ['exe', 'sh', 'bat', 'cmd', 'ps1', 'vbs', 'js', 'php', 'py', 'rb', 'pl', 'jar', 'com', 'msi', 'scr', 'pif', 'reg', 'hta', 'ws', 'wsf', 'lnk'];
+const MAX_MB = 50000, FREE_GB = 8;
+const sanitize = (n) => [...n.trim()].map((c) => (c.charCodeAt(0) < 32 || '/\\:*?"<>|'.includes(c) ? '_' : c)).join('').replace(/^[. ]+/, '');
+const sizeOf = (v) => v * 0.1; // GB, slider 1..100 → 0.1..10 GB
+const PRESETS = [
+  ['/Clients/Northwind Legal', 'hearing-exhibits.pdf', 12],
+  ['/Clients/Northwind Legal', 'invoice.pdf.exe', 1],
+  ['/Clients/../../etc', 'passwd', 1],
+  ['/.fileflow/versions', 'swap.bin', 1],
+  ['/Projects', 'notes:2026?.txt', 1],
+  ['/Brand assets', '.htaccess', 1],
+  ['/Projects/Website 2027', 'raw-footage.mov', 95],
+];
+$('#presets').innerHTML = PRESETS.map((p, i) => `<button class="preset" type="button" data-i="${i}">${esc(p[1])}</button>`).join('');
+$('#presets').addEventListener('click', (e) => { const b = e.target.closest('.preset'); if (!b) return; const p = PRESETS[+b.dataset.i]; $('#g-dir').value = p[0]; $('#g-name').value = p[1]; $('#g-size').value = p[2]; check(); });
+function check() {
+  const dir = $('#g-dir').value, name = $('#g-name').value, gb = sizeOf(+$('#g-size').value);
+  $('#g-size-v').textContent = gb < 1 ? `${Math.round(gb * 1000)} MB` : `${gb.toFixed(1)} GB`;
+  const rows = []; let fail = null;
+  const add = (nm, ds, ok, st) => { rows.push({ nm, ds, cls: fail ? 'skip' : ok ? 'pass' : 'fail', st: fail ? 'not reached' : st }); if (!ok && !fail) fail = { nm, st }; };
+  const segs = dir.split('/');
+  const dotdot = segs.includes('..');
+  const canon = '/' + segs.filter((s) => s && s !== '.').join('/');
+  add('Normalize the path', dotdot ? 'Any “..” segment is refused outright, before permissions are checked.' : `Canonical form: ${canon}`, !dotdot, dotdot ? '400 Invalid path' : 'ok');
+  const internal = canon.split('/').some((s) => s.startsWith('.fileflow'));
+  add('Stay out of internal data', 'Nothing under .fileflow (versions, trash, uploads, secrets) is reachable at any depth.', !internal, internal ? '403 Access denied' : 'ok');
+  const safe = sanitize(name);
+  add('Sanitize the file name', safe === name ? 'No separators, control or reserved characters.' : `Stored as “${safe || '(empty)'}”`, !!safe, safe ? (safe === name ? 'ok' : 'renamed') : '400 Invalid filename');
+  const ext = (safe.includes('.') && !safe.endsWith('.')) ? safe.split('.').pop().toLowerCase() : '';
+  const blocked = BLOCKED.includes(ext);
+  add('Refuse executable types', ext ? `Last extension: .${ext}` : 'No extension.', !blocked, blocked ? '400 File type is not allowed' : 'ok');
+  const tooBig = gb * 1024 > MAX_MB;
+  add('Respect the upload limit', `MAX_UPLOAD_MB is ${MAX_MB.toLocaleString('en')} on this server.`, !tooBig, tooBig ? '400 File exceeds max upload size' : 'ok');
+  const over = gb > FREE_GB;
+  add('Check the quota', `${FREE_GB} GB left on your quota.`, !over, over ? '400 Quota exceeded' : 'ok');
+  $('#checks').innerHTML = rows.map((r) => `<li class="${r.cls}"><span class="ic" aria-hidden="true">${r.cls === 'pass' ? '✓' : r.cls === 'fail' ? '✕' : ''}</span><span><span class="nm">${esc(r.nm)}</span><span class="ds">${esc(r.ds)}</span></span><span class="st">${esc(r.st)}</span></li>`).join('');
+  const v = $('#g-verdict');
+  if (fail) { v.className = 'verdict bad'; v.innerHTML = `Refused before any data is sent. <code>${esc(fail.st)}</code>`; }
+  else { v.className = 'verdict ok'; v.innerHTML = `Accepted. Uploading to <code>${esc(canon)}/${esc(safe)}</code> in 5 MB chunks.`; }
+}
+['g-dir', 'g-name', 'g-size'].forEach((id) => $('#' + id).addEventListener('input', check));
+check();
+
+/* ---------- Screens ---------- */
+const SHOTS = [
+  { tab: 'Files', img: 'img/ctx.jpg', crumb: 'My files › Brand assets', title: 'Every action, one right-click away', text: 'Open, download, share, tag, see version history, rename, copy or move, from the file itself.' },
+  { tab: 'Share link', img: 'img/share.jpg', crumb: 'right-click › Share link…', title: 'Share links in two clicks', text: 'Pick an expiry, add a password or a download limit, and copy the link.' },
+  { tab: 'Image preview', img: 'img/preview-img.jpg', crumb: 'double-click an image', title: 'Previews without downloading', text: 'Zoom images, play video and audio, page through PDFs and Office files in the browser.' },
+  { tab: 'CSV preview', img: 'img/preview-csv.jpg', crumb: 'Finance › 2026 › revenue-h1.csv', title: 'Data files as tables', text: 'CSV and Excel files open as a readable table, with the row and column count.' },
+  { tab: 'List view', img: 'img/list.jpg', crumb: 'Clients › Northwind Legal', title: 'Grid or list, your choice', text: 'Sort by name, type, size or date. Folders on the left, breadcrumbs on top.' },
+  { tab: 'Audit log', img: 'img/audit.jpg', crumb: 'Admin › Audit', title: 'Who did what, and from where', text: 'Logins, previews, shares and file actions with user, time and IP. Filter, then export to CSV.' },
+];
+const st = $('#stabs');
+st.innerHTML = SHOTS.map((s, i) => `<button class="stab" role="tab" type="button" aria-selected="${i === 0}">${s.tab}</button>`).join('') + '<span class="sp"></span><button class="linkbtn" id="s-pause" type="button" aria-label="Pause the screen slideshow">pause slideshow</button>';
+let at = 0, timer = null;
+function show(i, user) {
+  at = i; const s = SHOTS[i];
+  st.querySelectorAll('.stab').forEach((b, k) => b.setAttribute('aria-selected', String(k === i)));
+  const img = $('#s-img'); img.src = s.img; img.alt = s.title; img.style.animation = 'none'; void img.offsetWidth; img.style.animation = '';
+  $('#s-crumb').textContent = s.crumb; $('#s-title').textContent = s.title; $('#s-text').textContent = s.text;
+  if (user) stop();
+}
+function stop() { if (timer) { clearInterval(timer); timer = null; } $('#s-pause').hidden = true; }
+st.querySelectorAll('.stab').forEach((b, i) => b.addEventListener('click', () => show(i, true)));
+$('#s-pause').addEventListener('click', stop);
+$('.shot').addEventListener('focusin', stop);
+show(0);
+if (!reduced) timer = setInterval(() => show((at + 1) % SHOTS.length), 6500); else $('#s-pause').hidden = true;
+
+/* ---------- Audit severity ---------- */
+const SEV = [['High', ['H1', 'H2']], ['Medium', ['M1', 'M2', 'M3', 'M4']], ['Low', ['F1', 'F2', 'F3', 'F4', 'F5']], ['Critical', []]];
+let si = 0;
+$('#sev').innerHTML = SEV.map(([n, ids]) => `<div class="sevrow"><span>${n}</span><span class="bar">${ids.map((id) => `<i style="--i:${si++}">${id}</i>`).join('') || '<span class="cap">none found</span>'}</span><span class="st">${ids.length ? `${ids.length} fixed` : '0'}</span></div>`).join('');
+
+/* ---------- Copy ---------- */
+document.querySelectorAll('.code .copy').forEach((b) => b.addEventListener('click', async () => {
+  const pre = b.nextElementSibling;
+  try { await navigator.clipboard.writeText(pre.textContent); b.textContent = 'copied'; }
+  catch { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'selected'; }
+  setTimeout(() => (b.textContent = 'copy'), 1600);
+}));
+
+/* ---------- Replay on view; everything is visible without it ---------- */
+if (!reduced && 'IntersectionObserver' in window) {
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return; const el = e.target; io.unobserve(el);
+    if (el.id === 'figs') el.querySelectorAll('[data-count]').forEach((n) => {
+      const end = +n.dataset.count, pre = n.dataset.prefix || '', suf = n.dataset.suffix || '', t0 = performance.now();
+      const f = (t) => { const p = Math.min(1, (t - t0) / 1000); n.textContent = pre + Math.round(end * (1 - Math.pow(1 - p, 3))) + suf; if (p < 1) requestAnimationFrame(f); };
+      requestAnimationFrame(f);
+    });
+    else el.classList.add('play');
+  }), { threshold: 0.3 });
+  ['#figs', '#listing', '#sev'].forEach((s) => io.observe($(s)));
+}
+})();
+</script>
+
+</body>
+</html>

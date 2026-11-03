@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FileFlow — Sales Brochure</title>
+<style>
+  :root{
+    --indigo:#6366f1; --indigo-d:#4f46e5; --violet:#7c3aed;
+    --ink:#0f1117; --ink2:#1a1d28; --slate:#475569; --muted:#64748b;
+    --line:#e6e8ef; --bg:#ffffff; --soft:#f6f7fb;
+    --emerald:#10b981; --amber:#f59e0b; --sky:#0ea5e9; --rose:#f43f5e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);font-size:15px;line-height:1.5}
+  @page{size:A4;margin:0}
+
+  .page{
+    position:relative;width:210mm;min-height:297mm;padding:18mm 16mm;
+    page-break-after:always;overflow:hidden;background:var(--bg);
+  }
+  .page:last-child{page-break-after:auto}
+
+  /* ── Hero ───────────────────────────────────────────── */
+  .hero{
+    color:#fff;padding:0;page-break-after:always;
+    background:radial-gradient(1200px 600px at 80% -10%,rgba(124,58,237,.55),transparent 60%),
+               linear-gradient(135deg,#11131c 0%,#1b1f31 55%,#241b46 100%);
+    min-height:297mm;width:210mm;position:relative;overflow:hidden;
+  }
+  .hero .wrap{padding:24mm 16mm}
+  .hero::after{content:"";position:absolute;right:-120px;bottom:-120px;width:420px;height:420px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,rgba(99,102,241,.55),transparent 70%)}
+  .brandrow{display:flex;align-items:center;gap:12px;margin-bottom:60px}
+  .logo{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--indigo),var(--violet));
+    display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 10px 30px rgba(99,102,241,.45)}
+  .brandname{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .brandname span{color:#a5b4fc}
+  .kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    color:#a5b4fc;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.35);
+    padding:7px 14px;border-radius:999px;margin-bottom:26px}
+  h1.title{font-size:54px;line-height:1.04;font-weight:800;letter-spacing:-.03em;max-width:16ch}
+  h1.title em{font-style:normal;background:linear-gradient(90deg,#818cf8,#c4b5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{margin-top:22px;font-size:18px;line-height:1.6;color:#c7cbd9;max-width:52ch}
+  .chips{display:flex;gap:12px;margin-top:40px;flex-wrap:wrap}
+  .chip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;
+    padding:16px 18px;min-width:150px}
+  .chip .big{font-size:24px;font-weight:800;color:#fff}
+  .chip .sm{font-size:12.5px;color:#aeb4c6;margin-top:3px}
+  .heronote{position:absolute;left:16mm;bottom:18mm;color:#8b91a6;font-size:12.5px}
+
+  /* ── Generic section ───────────────────────────────── */
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--indigo);margin-bottom:10px}
+  h2{font-size:30px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+  .sub{color:var(--slate);font-size:15px;max-width:62ch;margin-bottom:26px}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{border:1px solid var(--line);border-radius:16px;padding:20px;background:var(--bg);
+    box-shadow:0 1px 2px rgba(16,24,40,.04)}
+  .card .ic{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    font-size:20px;margin-bottom:12px}
+  .card h3{font-size:16px;font-weight:700;margin-bottom:5px}
+  .card p{font-size:13.5px;color:var(--slate);line-height:1.5}
+  .i-indigo{background:rgba(99,102,241,.12)} .i-emerald{background:rgba(16,185,129,.13)}
+  .i-amber{background:rgba(245,158,11,.14)} .i-sky{background:rgba(14,165,233,.13)}
+  .i-violet{background:rgba(124,58,237,.13)} .i-rose{background:rgba(244,63,94,.12)}
+
+  /* ── Security band ─────────────────────────────────── */
+  .band{background:var(--soft);border:1px solid var(--line);border-radius:20px;padding:26px}
+  .seclist{display:grid;grid-template-columns:1fr 1fr;gap:12px 26px;margin-top:6px}
+  .secitem{display:flex;gap:11px;align-items:flex-start}
+  .tick{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:var(--emerald);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px}
+  .secitem b{font-size:14px;font-weight:700}
+  .secitem span{display:block;font-size:12.5px;color:var(--slate);line-height:1.45}
+
+  /* ── Comparison table ──────────────────────────────── */
+  table.cmp{width:100%;border-collapse:separate;border-spacing:0;margin-top:6px;font-size:13.5px}
+  table.cmp th,table.cmp td{padding:13px 16px;text-align:left}
+  table.cmp thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  table.cmp thead th.us{color:var(--indigo)}
+  table.cmp tbody tr{background:var(--bg)}
+  table.cmp tbody tr:nth-child(even){background:var(--soft)}
+  table.cmp td{border-top:1px solid var(--line)}
+  table.cmp td.feat{font-weight:600}
+  table.cmp td.us{font-weight:700;color:#0b7a55}
+  table.cmp td.them{color:var(--muted)}
+  .colus{background:rgba(99,102,241,.06)!important;border-left:2px solid var(--indigo);border-right:2px solid var(--indigo)}
+
+  /* ── Use cases ─────────────────────────────────────── */
+  .uses{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .use{border:1px solid var(--line);border-radius:14px;padding:16px}
+  .use .ic{font-size:22px;margin-bottom:8px}
+  .use h4{font-size:14px;font-weight:700;margin-bottom:4px}
+  .use p{font-size:12.5px;color:var(--slate);line-height:1.45}
+
+  /* ── Deploy / code ─────────────────────────────────── */
+  .deploy{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center}
+  .steps{counter-reset:s}
+  .step{display:flex;gap:13px;margin-bottom:16px}
+  .num{counter-increment:s;flex:0 0 30px;width:30px;height:30px;border-radius:9px;
+    background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center;font-size:14px}
+  .num::before{content:counter(s)}
+  .step b{font-size:14.5px} .step p{font-size:13px;color:var(--slate)}
+  pre{background:var(--ink);color:#e2e8f0;border-radius:14px;padding:18px 18px;font-size:12px;
+    font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;line-height:1.7;
+    white-space:pre-wrap;word-break:break-word}
+  pre .c{color:#6b7280} pre .g{color:#86efac} pre .b{color:#93c5fd}
+
+  /* ── CTA ───────────────────────────────────────────── */
+  .cta{margin-top:30px;border-radius:20px;padding:34px 30px;color:#fff;position:relative;overflow:hidden;
+    background:radial-gradient(700px 300px at 90% -40%,rgba(124,58,237,.6),transparent 60%),
+               linear-gradient(135deg,var(--indigo-d),var(--violet))}
+  .cta h3{font-size:26px;font-weight:800;letter-spacing:-.02em}
+  .cta p{margin-top:8px;color:#e7e8ff;font-size:14.5px;max-width:54ch}
+  .ctarow{display:flex;gap:22px;margin-top:20px;flex-wrap:wrap}
+  .ctarow .pill{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+    padding:11px 18px;border-radius:999px;font-size:13.5px;font-weight:600}
+  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:26px;
+    color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+  .secnum{position:absolute;top:14mm;right:16mm;color:var(--line);font-weight:800;font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 — HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="brandrow">
+      <div class="logo">🗂️</div>
+      <div class="brandname">File<span>Flow</span></div>
+    </div>
+
+    <span class="kicker">Self-hosted file platform</span>
+    <h1 class="title">Own your files. <em>Without giving up the cloud experience.</em></h1>
+    <p class="lede">FileFlow is a modern, self-hosted file manager that gives teams secure sharing,
+      collaboration, and previews — running entirely on your own server. The polish of Dropbox,
+      the privacy of on-prem, in a single container.</p>
+
+    <div class="chips">
+      <div class="chip"><div class="big">1 container</div><div class="sm">Deploys in minutes with Docker</div></div>
+      <div class="chip"><div class="big">$0 / seat</div><div class="sm">No per-user cloud fees, ever</div></div>
+      <div class="chip"><div class="big">100% yours</div><div class="sm">Your server · your data · your rules</div></div>
+    </div>
+  </div>
+  <div class="heronote">FileFlow — product brochure for sales conversations</div>
+</section>
+
+<!-- PAGE 2 — FEATURES -->
+<section class="page">
+  <div class="secnum">01 — Capabilities</div>
+  <div class="eyebrow">Everything teams need</div>
+  <h2>One place for files — fast, friendly, complete</h2>
+  <p class="sub">From drag-and-drop uploads of huge files to rich in-browser previews, FileFlow covers the
+    full day-to-day workflow your users expect from a premium cloud tool.</p>
+
+  <div class="grid">
+    <div class="card"><div class="ic i-indigo">📤</div><h3>Resumable uploads</h3>
+      <p>Drag-and-drop with chunked, resumable transfers — multi-gigabyte files survive flaky connections.</p></div>
+    <div class="card"><div class="ic i-sky">👁️</div><h3>Rich previews</h3>
+      <p>Images, video, audio, PDF, Markdown, CSV, Excel, Word &amp; PowerPoint, plus code with syntax highlighting.</p></div>
+    <div class="card"><div class="ic i-violet">🔗</div><h3>Smart share links</h3>
+      <p>Public links with passwords, expiry dates, and download limits — including one-time links.</p></div>
+    <div class="card"><div class="ic i-emerald">👥</div><h3>Team collaboration</h3>
+      <p>Shared folders and direct user-to-user shares with read or read-write access, all inside the app.</p></div>
+    <div class="card"><div class="ic i-amber">📥</div><h3>Upload requests</h3>
+      <p>Send a “drop box” link so clients and partners can upload to you — no account required.</p></div>
+    <div class="card"><div class="ic i-rose">🕒</div><h3>Versions &amp; trash</h3>
+      <p>Automatic file versioning and a 30-day recycle bin mean nothing is ever lost by accident.</p></div>
+    <div class="card"><div class="ic i-indigo">🔎</div><h3>Search &amp; tags</h3>
+      <p>Full-text search, tags, and collections keep large libraries instantly navigable.</p></div>
+    <div class="card"><div class="ic i-sky">🌍</div><h3>Polished &amp; localized</h3>
+      <p>Light/dark themes, keyboard shortcuts, and English &amp; French out of the box.</p></div>
+  </div>
+</section>
+
+<!-- PAGE 3 — SECURITY + COMPARISON -->
+<section class="page">
+  <div class="secnum">02 — Trust</div>
+  <div class="eyebrow">Security by design</div>
+  <h2>Built for data you can’t put in someone else’s cloud</h2>
+  <p class="sub">FileFlow ships with the controls security and compliance teams ask for — and the codebase
+    is hardened against the file-sharing attack patterns that matter.</p>
+
+  <div class="band">
+    <div class="seclist">
+      <div class="secitem"><div class="tick">✓</div><div><b>Two-factor authentication</b><span>TOTP (authenticator apps) with single-use recovery codes.</span></div></div>
+      <div class="secitem"><div class="tick">✓</div><div><b>Role-based access control</b><span>Roles, groups, granular permissions and per-path restrictions.</span></div></div>
+      <div class="secitem"><div class="tick">✓</div><div><b>Full audit trail</b><span>Every login, share and file action logged and exportable to CSV.</span></div></div>
+      <div class="secitem"><div class="tick">✓</div><div><b>Session control &amp; quotas</b><span>Instant “log out everywhere”, admin revoke, per-user storage limits.</span></div></div>
+      <div class="secitem"><div class="tick">✓</div><div><b>Hardened by default</b><span>Strict CSP, secure cookies, rate-limited logins, path-traversal protection.</span></div></div>
+      <div class="secitem"><div class="tick">✓</div><div><b>Your data stays put</b><span>Self-hosted on your infrastructure — no third-party data processors.</span></div></div>
+    </div>
+  </div>
+
+  <div class="eyebrow" style="margin-top:30px">How it compares</div>
+  <h2 style="font-size:24px">FileFlow vs. public cloud storage</h2>
+  <table class="cmp">
+    <thead><tr><th>&nbsp;</th><th class="us">FileFlow</th><th>Public cloud drives</th></tr></thead>
+    <tbody>
+      <tr><td class="feat">Where your data lives</td><td class="us colus">Your own server</td><td class="them">A vendor’s datacenter</td></tr>
+      <tr><td class="feat">Pricing model</td><td class="us colus">One deployment, unlimited users</td><td class="them">Recurring fee per seat</td></tr>
+      <tr><td class="feat">Admin &amp; audit control</td><td class="us colus">Full, self-managed</td><td class="them">Limited to vendor tooling</td></tr>
+      <tr><td class="feat">Custom retention &amp; policy</td><td class="us colus">You decide</td><td class="them">Vendor-defined</td></tr>
+      <tr><td class="feat">Vendor lock-in</td><td class="us colus">None — files on disk</td><td class="them">High</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- PAGE 4 — USE CASES + DEPLOY + CTA -->
+<section class="page">
+  <div class="secnum">03 — Get started</div>
+  <div class="eyebrow">Who it’s for</div>
+  <h2>Made for teams that value control</h2>
+  <p class="sub">Wherever data sensitivity, cost, or sovereignty rules out public cloud drives, FileFlow fits.</p>
+
+  <div class="uses">
+    <div class="use"><div class="ic">🏢</div><h4>SMBs &amp; agencies</h4><p>A shared drive and client portal without per-seat SaaS bills.</p></div>
+    <div class="use"><div class="ic">🛡️</div><h4>Regulated industries</h4><p>Healthcare, legal &amp; finance teams that must keep data on-prem.</p></div>
+    <div class="use"><div class="ic">🧑‍💻</div><h4>IT &amp; MSPs</h4><p>A white-labelable file platform you run for yourself or clients.</p></div>
+  </div>
+
+  <div class="eyebrow" style="margin-top:30px">Effortless deployment</div>
+  <h2 style="font-size:24px">Live in three steps</h2>
+  <div class="deploy">
+    <div class="steps">
+      <div class="step"><div class="num"></div><div><b>Pull &amp; configure</b><p>One image, a few environment variables — no external database to manage.</p></div></div>
+      <div class="step"><div class="num"></div><div><b>Run it anywhere</b><p>A VPS, a NAS, or your datacenter. SQLite-backed, single container.</p></div></div>
+      <div class="step"><div class="num"></div><div><b>Invite your team</b><p>Create users &amp; groups, set quotas, and start sharing securely.</p></div></div>
+    </div>
+    <pre><span class="c"># Up and running in under a minute</span>
+$ docker compose up -d
+
+<span class="c"># That's it — open the app</span>
+<span class="g">✓</span> Live at <span class="b">https://files.acme.io</span></pre>
+  </div>
+
+  <div class="cta">
+    <h3>Bring your files home.</h3>
+    <p>Give your team the file experience they love — on infrastructure you control, with security you can prove.
+       Let’s set up a tailored demo for your environment.</p>
+    <div class="ctarow">
+      <div class="pill">📧 hello@fileflow.example</div>
+      <div class="pill">🌐 fileflow.example</div>
+      <div class="pill">📅 Book a live demo</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span><b>FileFlow</b> — self-hosted file management</span>
+    <span>Own your files.</span>
+  </div>
+</section>
+
+</body>
+</html>

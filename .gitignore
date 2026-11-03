@@ -1,0 +1,87 @@
+# ─── Rust / Backend ───────────────────────────────────────────────
+backend/target/
+backend/Cargo.lock
+# cargo-fuzz build output & generated corpora/crashes (keep fuzz_targets + Cargo.toml)
+backend/fuzz/target/
+backend/fuzz/corpus/
+backend/fuzz/artifacts/
+backend/fuzz/Cargo.lock
+backend/data/*.json
+backend/data/.fileflow_secret
+backend/data/files/
+**/*.rs.bk
+
+# ─── Frontend ─────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env.local
+frontend/.env.*.local
+
+# ─── Node.js / Package Management ────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+pnpm-error.log*
+.pnpm-store/
+package-lock.json.bak
+# Frontend is pnpm-only (pnpm-lock.yaml); keep npm from reintroducing a second lockfile
+frontend/package-lock.json
+yarn.lock
+
+# ─── Build & dist artifacts ──────────────────────────────────────
+dist/
+build/
+*.tsbuildinfo
+
+# ─── Environment & secrets ────────────────────────────────────────
+.env
+.env.*
+!.env.example
+.env.local
+
+# ─── OS files ──────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ─── IDE & Editor ────────────────────────────────────────────────
+.vscode/
+.idea/
+.fleet/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+.sublime-project
+.sublime-workspace
+.history/
+
+# ─── Logs & temporary files ──────────────────────────────────────
+*.log
+*.log.*
+.log/
+tmp/
+temp/
+
+# ─── Docker ────────────────────────────────────────────────────
+.docker/
+
+# ─── Testing & Coverage ────────────────────────────────────────
+coverage/
+.nyc_output/
+*.lcov
+
+# ─── Graphify tooling output ──────────────────────────────────────
+graphify-out/
+
+# ─── Runtime data ────────────────────────────────────────────────
+data/
+config/

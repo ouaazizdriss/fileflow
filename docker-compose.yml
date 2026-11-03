@@ -1,0 +1,32 @@
+services:
+  fileflow:
+    image: fileflow:latest
+    container_name: fileflow
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env before first run}
+      ROOT_DIR: /data
+      CONFIG_DIR: /config
+      MAX_UPLOAD_MB: 50000
+      PORT: 8080
+      # Auth cookies are Secure-by-default (HTTPS only). This local compose is
+      # plain HTTP, so disable it here. Behind TLS in production, remove this
+      # line (or set "true").
+      COOKIE_SECURE: "false"
+      # Set to "true" ONLY when behind a reverse proxy that sets X-Forwarded-For;
+      # otherwise the client could spoof its IP to evade login rate limiting.
+      TRUST_PROXY_HEADERS: "false"
+    volumes:
+       - ./data:/data
+       - ./config:/config
+    healthcheck:
+      # Self-contained check via the app binary — the distroless image has no
+      # shell/wget/curl.
+      test: ["CMD", "/app/fileflow", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

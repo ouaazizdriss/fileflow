@@ -1,0 +1,57 @@
+# Automated dependency updates. Security updates are raised as soon as an
+# advisory is published (Dependabot security updates are enabled on the repo)
+# and ignore the cooldown; version updates are batched weekly and only
+# propose releases at least 7 days old, so a freshly published malicious or
+# broken version has time to be caught and yanked first.
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 10
+    groups:
+      rust-minor-patch:
+        update-types: [minor, patch]
+    labels: [dependencies, rust]
+
+  # pnpm projects use the npm ecosystem (Dependabot updates pnpm-lock.yaml).
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 10
+    groups:
+      frontend-minor-patch:
+        update-types: [minor, patch]
+      eslint:
+        patterns: ["eslint*", "@eslint/*", "@eslint-react/*", "typescript-eslint"]
+    labels: [dependencies, frontend]
+
+  # Workflow actions are pinned by commit SHA; Dependabot bumps SHA + comment.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    labels: [dependencies, ci]
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    labels: [dependencies, docker]
